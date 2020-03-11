@@ -154,7 +154,7 @@ class StaticContentAttachments(models.Model):
     ATTACHMENT_LINK_TPL = '<a href="{url}" class="content-files">{name}</a>'
 
     content = models.ForeignKey(Static, on_delete=models.CASCADE)
-    file = models.FileField(upload_to='uploads', null=True, blank=True, verbose_name='Вложения')
+    file = models.FileField(upload_to='uploads/%Y/%m/%d', null=True, blank=True, verbose_name='Вложения')
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
