@@ -79,7 +79,7 @@ class Static(models.Model):
     template = models.TextField(default=EMPTY)
     title = models.TextField(verbose_name=TITLE_DESCRIPTION)
     #   Image
-    icon = models.ImageField(default=EMPTY, blank=True, upload_to='uploads', max_length=500,
+    icon = models.ImageField(default=EMPTY, blank=True, upload_to='uploads/%Y/%m/%d', max_length=500,
                              verbose_name=ICON_DESCRIPTION)
 
     #   Short description
@@ -135,7 +135,7 @@ class Static(models.Model):
             storage, path = attachment.file.storage, attachment.file.path
             storage.delete(path)
 
-        #   Then delete bound model
+        #   Then delete bounded model
         result = super().delete(*args, **kwargs)
         return result
 
