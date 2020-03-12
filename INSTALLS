@@ -1,3 +1,7 @@
 pip install django-ckeditor
 pip install mysqlclient
 pip install Pillow
+
+После клонирования с github'a
+    - install virtual env with inherit packages
+    - pip install django
