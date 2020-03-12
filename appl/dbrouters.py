@@ -1,7 +1,7 @@
 from appl.apps import ApplConfig
 
 
-class DbRouter:
+class ApplDatabaseRouter:
     BASE_NAME = 'koksa'
     """
     A router to control all database operations on models in the
