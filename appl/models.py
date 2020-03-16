@@ -46,11 +46,10 @@ class Static(models.Model):
     #  Empty fields
     EMPTY = ''
 
-    #   Search pattern in content field
-    # REGEX = r'<br.*?class="attachments".*?/?>.*$'
-    # REGEX = r'<hr.*?>.*?$s'
-    # REGEX = r'<hr.*?>.*?$'
     REGEX = r'<p>\*{25,}.*$'
+
+    ATTACHMENT_LINK_TPL = '<a href="{url}" class="content-files">{name}</a><br />'
+    ATTACHMENTS_SEPARATORS_COUNT = 125
 
     #   Fields descriptions
     CATEGORY_DESCRIPTION = 'Пункт меню'
@@ -59,10 +58,6 @@ class Static(models.Model):
     ICON_DESCRIPTION = 'Картинка'
     SHORT_DESCRIPTION = 'Анонс'
     CONTENT_DESCRIPTION = 'Подробнее'
-
-    ATTACHMENT_LINK_TPL = '<a href="{url}" class="content-files">{name}</a><br />'
-
-    ATTACHMENTS_SEPARATORS_COUNT = 125
 
     visibility = models.PositiveIntegerField(default=VISIBLE)
     category = models.ForeignKey(StaticCategories, on_delete=models.CASCADE, db_column='category',
