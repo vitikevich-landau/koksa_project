@@ -37,7 +37,7 @@
             {% endblock %}
             {% block userlinks %}
                 {% if site_url %}
-                    <span style="font-weight: bold; padding: 0 .5em 0 .5em">Количество заявок: {{ foo }}</span>
+                    <span style="font-weight: bold; padding: 0 .5em 0 .5em">Количество заявок: {{ bids_count }}</span>
 {#                    <a href="{{ site_url }}">{% trans 'View site' %}</a> /#}
                 {% endif %}
                 {% if user.is_active and user.is_staff %}
