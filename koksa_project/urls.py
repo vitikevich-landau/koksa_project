@@ -20,5 +20,6 @@ from django.urls import path
 from koksa_project import settings
 
 urlpatterns = [
+    path('', admin.site.urls),
     path('admin/', admin.site.urls),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
