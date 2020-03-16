@@ -90,7 +90,7 @@ DATABASES = {
     }
 }
 
-DATABASE_ROUTERS = ['appl.dbrouters.ApplDatabaseRouter']
+DATABASE_ROUTERS = ['appl.database_routers.ApplDatabaseRouter']
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
