@@ -10,6 +10,7 @@ import re
 
 from django.db import models
 from ckeditor.fields import RichTextField
+from transliterate import translit
 
 
 class StaticCategories(models.Model):
@@ -152,6 +153,9 @@ class StaticContentAttachments(models.Model):
     file = models.FileField(upload_to='uploads/%Y/%m/%d', null=True, blank=True, verbose_name='Вложения')
 
     def save(self, *args, **kwargs):
+        f_name, f_extension = os.path.splitext(os.path.basename(self.file.name))
+        self.file.name = translit(f_name, language_code='ru', reversed=True) + f_extension
+
         super().save(*args, **kwargs)
 
         #   Save model after save attachments
