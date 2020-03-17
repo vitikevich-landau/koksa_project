@@ -15,6 +15,8 @@ class DjangoAdminLog(models.Model):
 
     @staticmethod
     def created_in_current_month():
+        #   Надо отсеять события добавления пользователей
+
         return DjangoAdminLog.objects\
             .filter(action_time__month=datetime.now().month)\
             .filter(action_flag=1)
