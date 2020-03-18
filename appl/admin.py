@@ -36,16 +36,8 @@ class StaticCategoriesAdmin(admin.ModelAdmin):
     # fields = ('name',)
     search_fields = ('name',)
 
-    #   Проверить если user не админ,
-    #   запретить редактирование
-    # def has_add_permission(self, request):
-    #     return request.user.is_staff or False
-    #
-    # def has_change_permission(self, request, obj=None):
-    #     return request.user.is_staff or False
-    #
-    # def has_delete_permission(self, request, obj=None):
-    #     return request.user.is_staff or False
+    def get_model_perms(self, request):
+        return {}
 
 
 @admin.register(Static)
