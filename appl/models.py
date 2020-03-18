@@ -38,6 +38,8 @@ class StaticCategories(models.Model):
     class Meta:
         managed = False
         db_table = 'static_categories'
+        verbose_name = 'Категория'
+        verbose_name_plural = 'Категории'
 
 
 class Static(models.Model):
@@ -75,7 +77,7 @@ class Static(models.Model):
     template = models.TextField(default=EMPTY)
     title = models.TextField(verbose_name=TITLE_DESCRIPTION)
     #   Image
-    icon = models.ImageField(default=EMPTY, blank=True, upload_to='uploads/%Y/%m/%d', max_length=500,
+    icon = models.ImageField(default=EMPTY, blank=True, upload_to='%Y/%m/%d', max_length=500,
                              verbose_name=ICON_DESCRIPTION)
 
     #   Short description
@@ -87,11 +89,16 @@ class Static(models.Model):
         """
         Пройтись по вложениям и сгенерить ссылки на скачивание по шаблону
         """
+        from appl.current_host import get_current_host
+        from koksa_project.settings import MEDIA_URL
+
+        current_host = get_current_host()
+
         not_empty_attachments = filter(lambda v: v.file.name, self.staticcontentattachments_set.all())
 
         links = map(
             lambda v: self.ATTACHMENT_LINK_TPL.format(
-                url=v.file.name, name=os.path.basename(v.file.name)
+                url=current_host + MEDIA_URL + v.file.name, name=os.path.basename(v.file.name)
             ),
             not_empty_attachments
         )
@@ -150,7 +157,7 @@ class StaticContentAttachments(models.Model):
     ATTACHMENT_LINK_TPL = '<a href="{url}" class="content-files">{name}</a>'
 
     content = models.ForeignKey(Static, on_delete=models.CASCADE)
-    file = models.FileField(upload_to='uploads/%Y/%m/%d', null=True, blank=True, verbose_name='Вложения')
+    file = models.FileField(upload_to='%Y/%m/%d', null=True, blank=True, verbose_name='Вложения')
 
     def save(self, *args, **kwargs):
         f_name, f_extension = os.path.splitext(os.path.basename(self.file.name))
