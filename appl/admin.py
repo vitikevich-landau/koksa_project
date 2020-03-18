@@ -4,7 +4,7 @@ from django.contrib import admin
 from django.forms import ClearableFileInput
 from django.db import models
 
-from appl.models import Static, StaticContentAttachments
+from appl.models import Static, StaticContentAttachments, StaticCategories
 
 
 # class MyAdminSite(admin.AdminSite):
@@ -30,12 +30,31 @@ class StaticContentAttachmentsInline(admin.StackedInline):
     #     }
 
 
+@admin.register(StaticCategories)
+class StaticCategoriesAdmin(admin.ModelAdmin):
+    # pass
+    # fields = ('name',)
+    search_fields = ('name',)
+
+    #   Проверить если user не админ,
+    #   запретить редактирование
+    def has_add_permission(self, request):
+        return request.user.is_staff or False
+
+    def has_change_permission(self, request, obj=None):
+        return request.user.is_staff or False
+
+    def has_delete_permission(self, request, obj=None):
+        return request.user.is_staff or False
+
+
+@admin.register(Static)
 class StaticAdmin(admin.ModelAdmin):
     list_display = ['title', 'category', 'start']
     fieldsets = [
         (None, {'fields': ['category', 'title', 'icon', 'short', 'content']}),
     ]
+    # readonly_fields = ('category',)
     inlines = [StaticContentAttachmentsInline]
 
-
-admin.site.register(Static, StaticAdmin)
+    autocomplete_fields = ('category',)
