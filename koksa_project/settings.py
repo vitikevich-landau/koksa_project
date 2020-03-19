@@ -48,7 +48,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'appl.current_host_middleware.CurrentHostMiddleware',
+    'appl.middlewares.CurrentHostMiddleware',
 ]
 
 ROOT_URLCONF = 'koksa_project.urls'

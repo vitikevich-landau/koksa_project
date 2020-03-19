@@ -89,7 +89,7 @@ class Static(models.Model):
         """
         Пройтись по вложениям и сгенерить ссылки на скачивание по шаблону
         """
-        from appl.current_host_middleware import get_current_host
+        from appl.middlewares import get_current_host
         from koksa_project.settings import MEDIA_URL
 
         current_host = get_current_host()
