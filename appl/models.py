@@ -24,7 +24,7 @@ def _create_upload_link(f_name):
     from appl.middlewares import get_current_host
     from koksa_project.settings import MEDIA_URL
 
-    return f'{get_current_host()}{MEDIA_URL}{f_name}'
+    return f'http://{get_current_host()}{MEDIA_URL}{f_name}'
 
 
 class Static(models.Model):
@@ -62,7 +62,7 @@ class Static(models.Model):
     template = models.TextField(default=EMPTY)
     title = models.TextField(verbose_name=TITLE_DESCRIPTION)
     #   Image
-    icon = models.ImageField(default=EMPTY, blank=True, upload_to='%Y/%m/%d', max_length=500,
+    icon = models.ImageField(upload_to='%Y/%m/%d', default=EMPTY, blank=True, max_length=500,
                              verbose_name=ICON_DESCRIPTION)
 
     #   Short description
@@ -74,7 +74,6 @@ class Static(models.Model):
         """
         Пройтись по вложениям и сгенерить ссылки на скачивание по шаблону
         """
-
         not_empty_attachments = list(filter(lambda v: v.file.name, self.staticcontentattachments_set.all()))
 
         links = map(
@@ -102,11 +101,18 @@ class Static(models.Model):
 
     def save(self, *args, **kwargs):
         self.clear_content()
+
         links = self.create_attachments_links()
         if links:
             self.content += f'{self.add_attachments_marker()}{self.create_attachments_links()}'
 
         super().save(*args, **kwargs)
+
+        if self.icon:
+            #   Ложим в базу по полному пути
+            if 'http://' not in self.icon.name:
+                self.icon.name = _create_upload_link(self.icon.name)
+                super().save(update_fields=['icon'])
 
     def delete(self, *args, **kwargs):
         #   If exist icon, delete icon
