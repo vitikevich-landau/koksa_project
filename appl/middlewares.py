@@ -1,6 +1,8 @@
 from django.utils.deprecation import MiddlewareMixin
 from threading import local
 
+# Для получения имени хоста в модели
+#  Исползуя глобальную переменную
 _locals = local()
 
 
