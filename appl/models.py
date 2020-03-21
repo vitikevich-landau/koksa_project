@@ -1,10 +1,3 @@
-# This is an auto-generated Django model module.
-# You'll have to do the following manually to clean this up:
-#   * Rearrange models' order
-#   * Make sure each model has one field with primary_key=True
-#   * Make sure each ForeignKey and OneToOneField has `on_delete` set to the desired behavior
-#   * Remove `managed = False` lines if you wish to allow Django to create, modify, and delete the table
-# Feel free to rename the models, but don't rename db_table values or field names.
 import os
 import re
 
@@ -15,22 +8,7 @@ from transliterate import translit
 
 class StaticCategories(models.Model):
     id = models.SmallAutoField(primary_key=True)
-    usestart = models.PositiveIntegerField()
-    usefinal = models.PositiveIntegerField()
-    parent = models.PositiveSmallIntegerField()
-    type = models.PositiveIntegerField()
-    usepic = models.IntegerField()
-    picwidth = models.SmallIntegerField()
-    picheight = models.SmallIntegerField()
-    matlimit = models.PositiveIntegerField()
-    ordering = models.PositiveIntegerField()
-    main_material = models.PositiveIntegerField()
-    alias = models.CharField(max_length=256)
     name = models.TextField()
-    keywords = models.TextField()
-    description = models.TextField()
-    my_template = models.TextField()
-    template = models.TextField()
 
     def __str__(self):
         return self.name
@@ -42,6 +20,13 @@ class StaticCategories(models.Model):
         verbose_name_plural = 'Категории'
 
 
+def _create_upload_link(f_name):
+    from appl.middlewares import get_current_host
+    from koksa_project.settings import MEDIA_URL
+
+    return f'{get_current_host()}{MEDIA_URL}{f_name}'
+
+
 class Static(models.Model):
     #   Default visibility
     VISIBLE = 1
@@ -49,10 +34,10 @@ class Static(models.Model):
     #  Empty fields
     EMPTY = ''
 
-    REGEX = r'<p>\*{25,}.*$'
+    ATTACHMENTS_SEPARATORS_COUNT = 25
+    REGEX = r'<p>\*{}.*$'.format(f'{{{ATTACHMENTS_SEPARATORS_COUNT},}}')
 
     ATTACHMENT_LINK_TPL = '<a href="{url}" class="content-files">{name}</a><br />'
-    ATTACHMENTS_SEPARATORS_COUNT = 125
 
     #   Fields descriptions
     CATEGORY_DESCRIPTION = 'Пункт меню'
@@ -89,16 +74,12 @@ class Static(models.Model):
         """
         Пройтись по вложениям и сгенерить ссылки на скачивание по шаблону
         """
-        from appl.middlewares import get_current_host
-        from koksa_project.settings import MEDIA_URL
-
-        current_host = get_current_host()
 
         not_empty_attachments = filter(lambda v: v.file.name, self.staticcontentattachments_set.all())
 
         links = map(
             lambda v: self.ATTACHMENT_LINK_TPL.format(
-                url=current_host + MEDIA_URL + v.file.name, name=os.path.basename(v.file.name)
+                url=_create_upload_link(v.file.name), name=os.path.basename(v.file.name)
             ),
             not_empty_attachments
         )
@@ -116,12 +97,14 @@ class Static(models.Model):
         """
         Очистить маркер и всё что ниже маркера, до конца
         """
-        self.content = re.sub(self.REGEX, self.EMPTY, self.content, flags=re.S) \
-                       + self.add_attachments_marker()
+
+        self.content = re.sub(self.REGEX, self.EMPTY, self.content, flags=re.S)
 
     def save(self, *args, **kwargs):
         self.clear_content()
-        self.content += self.create_attachments_links()
+        links = self.create_attachments_links()
+        if links:
+            self.content += f'{self.add_attachments_marker()}{self.create_attachments_links()}'
 
         super().save(*args, **kwargs)
 
@@ -160,6 +143,7 @@ class StaticContentAttachments(models.Model):
     file = models.FileField(upload_to='%Y/%m/%d', null=True, blank=True, verbose_name='Вложения')
 
     def save(self, *args, **kwargs):
+        #  Перевод в транслит для корректного сохранения
         f_name, f_extension = os.path.splitext(os.path.basename(self.file.name))
         self.file.name = translit(f_name, language_code='ru', reversed=True) + f_extension
 
