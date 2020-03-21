@@ -42,6 +42,8 @@ class StaticCategoriesAdmin(admin.ModelAdmin):
 
 @admin.register(Static)
 class StaticAdmin(admin.ModelAdmin):
+    change_form_template = 'appl/admin/change_form.html'
+
     list_display = ['title', 'category', 'start']
     fieldsets = [
         (None, {'fields': ['category', 'title', 'icon', 'short', 'content']}),
