@@ -75,13 +75,13 @@ class Static(models.Model):
         Пройтись по вложениям и сгенерить ссылки на скачивание по шаблону
         """
 
-        not_empty_attachments = filter(lambda v: v.file.name, self.staticcontentattachments_set.all())
+        not_empty_attachments = list(filter(lambda v: v.file.name, self.staticcontentattachments_set.all()))
 
         links = map(
             lambda v: self.ATTACHMENT_LINK_TPL.format(
                 url=_create_upload_link(v.file.name), name=os.path.basename(v.file.name)
             ),
-            not_empty_attachments
+            reversed(not_empty_attachments)
         )
 
         return ''.join(links)
